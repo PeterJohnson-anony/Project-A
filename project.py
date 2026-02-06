@@ -1,24 +1,25 @@
 import os
 from flask import Flask, render_template, request,jsonify
-from groq import Groq  # 对应 w8 groq.ipynb 的学习内容 
+from groq import Groq  
 import pandas as pd
 import joblib
 
 app = Flask(__name__)
 
-# 1. 配置 Groq 客户端 (建议在 Codespaces Settings 中设置环境变量)
-GROQ_API_KEY = os.environ.get("Project A", "your_default_api_key_here")
-client = Groq(api_key="Project A")
+# 1. 配置 Groq 客户端 (在 Codespaces Settings 中设置环境变量)
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+client = Groq(api_key=GROQ_API_KEY)
 
-# 2. 加载信用评估模型 (对应 W3 练习成果 )
-# 注意：请确保将您的模型文件命名为 credit_model.pkl 并放在 models 文件夹下
+# 2. 加载信用评估模型
+# 注意：请确保将模型文件命名为 credit_model.pkl 并放在 models 文件夹下
 try:
     model = joblib.load('models/credit_model.pkl')
 except:
     model = None
-    print("提醒：未找到模型文件，将使用模拟逻辑。")
+    print("Note: If the model file is not found, simulation model will be used.")
 
-@app.route('/')
+
+@app.route("/", methods=["GET","POST"])
 def index():
     return render_template('index.html')
 
@@ -29,9 +30,9 @@ def chat():
     
     try:
         completion = client.chat.completions.create(
-            model="llama3-8b-8192", # 或者您常用的 mixtral-8x7b-32768
+            model="llama-3.1-8b-instant",
             messages=[
-                {"role": "system", "content": "你是一位专业的区域银行助手，负责协助客户办理业务。"},
+                {"role": "system", "content": "You are a regional bank assistant, responsible for assisting customers in handling their transactions."},
                 {"role": "user", "content": user_input}
             ],
         )
@@ -40,7 +41,7 @@ def chat():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
-# 模块二：智能贷款审批 (基于 W3 逻辑 )
+# 模块二：贷款审批（机器学习）
 @app.route('/predict_credit', methods=['POST'])
 def predict_credit():
     data = request.json
@@ -57,10 +58,10 @@ def predict_credit():
     if model:
         prediction = model.predict(df)[0]
         # 假设 1 为 Good, 0 为 Bad
-        result = "批准（信用良好）" if prediction == 1 else "拒绝（高风险）"
+        result = "Approved (with good credit)" if prediction == 1 else "Rejected (high risk)"
     else:
         # 兜底模拟逻辑
-        result = "批准" if int(data.get('amount', 0)) < 10000 else "需进一步人工审核"
+        result = "Approved" if int(data.get('amount', 0)) < 10000 else "Requireing further manual review"
     
     return jsonify({"result": result})
 

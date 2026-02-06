@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 区域银行门户</title>
+    <title>AI Regional bank portal</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; gap: 20px; padding: 20px; }
         .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); flex: 1; }
@@ -17,22 +17,22 @@
 <body>
 
     <div class="card">
-        <h3>24/7 AI 银行客服</h3>
+        <h3>24/7 AI Bank Customer Service</h3>
         <div id="chat-box"></div>
         <div class="input-group">
-            <input type="text" id="chat-input" placeholder="输入您的问题..." style="flex: 1;">
-            <button onclick="sendChat()">咨询</button>
+            <input type="text" id="chat-input" placeholder="Enter your question..." style="flex: 1;">
+            <button onclick="sendChat()">Consulting</button>
         </div>
     </div>
 
     <div class="card">
-        <h3>智能贷款预审 (AI 评估)</h3>
+        <h3>Intelligent loan pre-approval (AI assessment)</h3>
         <div class="form-section">
-            <label>申请金额 ($):</label><br>
-            <input type="number" id="loan-amount" placeholder="如: 5000"><br><br>
-            <label>贷款期限 (月):</label><br>
-            <input type="number" id="loan-duration" placeholder="如: 12"><br><br>
-            <button onclick="applyLoan()" style="width: 100%;">提交 AI 审核</button>
+            <label>Application amount ($):</label><br>
+            <input type="number" id="loan-amount" placeholder="Such as: 5000"><br><br>
+            <label>Loan duration (months):</label><br>
+            <input type="number" id="loan-duration" placeholder="Such as: 12"><br><br>
+            <button onclick="applyLoan()" style="width: 100%;">Submit AI Review</button>
         </div>
         <div id="loan-result" style="margin-top: 20px; font-weight: bold; color: #d32f2f;"></div>
     </div>
@@ -43,7 +43,7 @@
             const box = document.getElementById('chat-box');
             if(!input.value) return;
 
-            box.innerHTML += `<p><b>您:</b> ${input.value}</p>`;
+            box.innerHTML += `<p><b>You:</b> ${input.value}</p>`;
             const res = await fetch('/chat', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -60,14 +60,14 @@
             const duration = document.getElementById('loan-duration').value;
             const resultDiv = document.getElementById('loan-result');
             
-            resultDiv.innerText = "AI 正在评估您的信用状况...";
+            resultDiv.innerText = "AI is evaluating your credit status...";
             const res = await fetch('/predict_credit', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({amount: amount, duration: duration, age: 30})
             });
             const data = await res.json();
-            resultDiv.innerText = "评估结果: " + data.result;
+            resultDiv.innerText = "Evaluation result: " + data.result;
         }
     </script>
 </body>
