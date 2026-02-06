@@ -46,12 +46,12 @@ def chat():
 def predict_credit():
     data = request.json
     
-    # 构建输入数据帧 (需与您训练时的特征顺序一致)
+    # 构建输入数据帧 (需与训练时的特征顺序一致)
     input_data = {
         'duration': [int(data.get('duration', 0))],
         'amount': [int(data.get('amount', 0))],
         'age': [int(data.get('age', 0))]
-        # ... 根据您的模型添加更多特征
+        # ... 根据模型添加更多特征
     }
     df = pd.DataFrame(input_data)
     
@@ -60,7 +60,7 @@ def predict_credit():
         # 假设 1 为 Good, 0 为 Bad
         result = "Approved (with good credit)" if prediction == 1 else "Rejected (high risk)"
     else:
-        # 兜底模拟逻辑
+        # 兜底模拟
         result = "Approved" if int(data.get('amount', 0)) < 10000 else "Requireing further manual review"
     
     return jsonify({"result": result})
