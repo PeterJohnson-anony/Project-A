@@ -11,9 +11,9 @@ GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 client = Groq(api_key=GROQ_API_KEY)
 
 # 2. 加载信用评估模型
-# 注意：请确保将模型文件命名为 credit_model.pkl 并放在 models 文件夹下
+# 注意：请确保将模型文件命名为 loan_model.pkl 并放在 models 文件夹下
 try:
-    model = joblib.load('models/credit_model.pkl')
+    model = joblib.load('models/loan_model.pkl')
 except:
     model = None
     print("Note: If the model file is not found, simulation model will be used.")
@@ -48,8 +48,8 @@ def predict_credit():
     
     # 构建输入数据帧 (需与训练时的特征顺序一致)
     input_data = {
-        'duration': [int(data.get('duration', 0))],
-        'amount': [int(data.get('amount', 0))],
+        'loan_amnt': [int(data.get('loan_amnt', 0))],
+        'loan_int_rate': [int(data.get('loan_int_rate', 0))],
         'age': [int(data.get('age', 0))]
         # ... 根据模型添加更多特征
     }
