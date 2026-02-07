@@ -42,25 +42,38 @@ def chat():
         return jsonify({"status": "error", "message": str(e)})
 
 # 模块二：贷款审批（机器学习）
+# 修复变量名并添加简单校验
 @app.route('/predict_credit', methods=['POST'])
 def predict_credit():
     data = request.json
-    
-    # 构建输入数据帧 (需与训练时的特征顺序一致)
-    input_data = {
-        'loan_amnt': [int(data.get('loan_amnt', 0))],
-        'loan_int_rate': [float(data.get('loan_int_rate', 0))]
-        # ... 根据模型添加更多特征
-    }
-    df = pd.DataFrame(input_data)
-    
+    try:
+        # 修复：与前端字段名保持一致
+        loan_amount = int(data.get('amount', 0))
+        loan_rate = float(data.get('rate', 0))
+        person_income = int(data.get('person_income', 0))
+    except (ValueError, TypeError):
+        return jsonify({"result": "Invalid input data"}), 400
+
+    # 添加参数验证
+    if loan_amount <= 0 or loan_rate < 0 or person_income <= 0:
+        return jsonify({"result": "Invalid input: Please enter valid positive numbers"}), 400
+
     if model:
+        # 2. 构建包含三个特征的数据帧 (注意顺序必须与训练时一致)
+        input_data = {
+            'loan_amnt': [loan_amount],
+            'loan_int_rate': [loan_rate],
+            'person_income': [person_income]
+        }
+        df = pd.DataFrame(input_data)
+        
         prediction = model.predict(df)[0]
-        # 假设 1 为 Good, 0 为 Bad
-        result = "Approved (with good credit)" if prediction == 1 else "Rejected (high risk)"
+        result = "Approved(acceptable credit)" if prediction == 1 else "Rejected(high risk)"
+        print(f"[ML Model] Prediction: {prediction}, Input: Loan=${loan_amount}, Rate={loan_rate}%, Income=${person_income}")
     else:
-        # 兜底模拟
-        result = "Approved" if int(data.get('amount', 0)) < 10000 else "Requireing further manual review"
+        # 模型未加载时的兜底逻辑
+        result = " Manual review required"
+        print(f"[WARNING] Model not loaded. Returning: {result}")
     
     return jsonify({"result": result})
 

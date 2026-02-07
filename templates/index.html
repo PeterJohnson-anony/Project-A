@@ -31,7 +31,9 @@
             <label>Application amount ($):</label><br>
             <input type="number" id="loan-amount" placeholder="Such as: 5000"><br><br>
             <label>Interest rate (%):</label><br>
-            <input type="number" id="loan-int-rate" placeholder="Such as: 5.00"><br><br>
+            <input type="number" id="loan-int-rate" placeholder="Such as: 2.00"><br><br>
+            <label>Annual Income ($):</label><br>
+            <input type="number" id="person-income" placeholder="Such as: 50000"><br><br>
             <button onclick="applyLoan()" style="width: 100%;">Submit AI Review</button>
         </div>
         <div id="loan-result" style="margin-top: 20px; font-weight: bold; color: #d32f2f;"></div>
@@ -58,13 +60,15 @@
         async function applyLoan() {
             const amount = document.getElementById('loan-amount').value;
             const rate = document.getElementById('loan-int-rate').value;
+            const income = document.getElementById('person-income').value;
             const resultDiv = document.getElementById('loan-result');
             
             resultDiv.innerText = "AI is evaluating your credit status...";
             const res = await fetch('/predict_credit', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({loan_amnt: amount, loan_int_rate: rate})
+                body: JSON.stringify({amount: amount, rate: rate, person_income: income
+                })
             });
             const data = await res.json();
             resultDiv.innerText = "Evaluation result: " + data.result;
