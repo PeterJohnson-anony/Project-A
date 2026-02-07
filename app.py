@@ -44,26 +44,34 @@ def chat():
 # 模块二：贷款审批（机器学习）
 @app.route('/predict_credit', methods=['POST'])
 def predict_credit():
-    data = request.json
-    
-    # 构建输入数据帧 (需与训练时的特征顺序一致)
-    input_data = {
-        'loan_amnt': [int(data.get('loan_amnt', 0))],
-        'loan_int_rate': [float(data.get('loan_int_rate', 0))],
-        'age': [int(data.get('age', 0))]
-        # ... 根据模型添加更多特征
-    }
-    df = pd.DataFrame(input_data)
-    
-    if model:
-        prediction = model.predict(df)[0]
-        # 假设 1 为 Good, 0 为 Bad
-        result = "Approved (with good credit)" if prediction == 1 else "Rejected (high risk)"
-    else:
-        # 兜底模拟
-        result = "Approved" if int(data.get('amount', 0)) < 10000 else "Requireing further manual review"
-    
-    return jsonify({"result": result})
+    try:
+        data = request.json
+        
+        amount = float(data.get('amount', 0))
+        rate = float(data.get('rate', 0))
+
+        # 2. 构造 DataFrame (列名必须保持 'loan_amnt' 以匹配模型训练时的要求)
+        input_data = {
+            'loan_amnt': [amount],      # 关键修改：把 amount 填入 loan_amnt
+            'loan_int_rate': [rate],    # 关键修改：把 rate 填入 loan_int_rate
+        }
+        df = pd.DataFrame(input_data)
+        
+        if model:
+            try:
+                prediction = model.predict(df)[0]
+                result = "Approved (with good credit)" if prediction == 1 else "Rejected (high risk)"
+            except Exception as e:
+                # 捕获模型内部错误（如特征数量不对），返回错误信息而不是崩溃
+                return jsonify({"result": f"Model Error: {str(e)}"}), 200
+        else:
+            result = "Approved" if amount < 10000 else "Manual Review"
+        
+        return jsonify({"result": result})
+
+    except Exception as e:
+        print(f"Server Error: {e}")
+        return jsonify({"result": f"System Error: {str(e)}"}), 500
 
 if __name__ == '__main__':
     # host='0.0.0.0' 是在 Codespaces 中正常预览的关键
