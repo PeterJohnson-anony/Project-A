@@ -68,7 +68,7 @@ def predict_credit():
         df = pd.DataFrame(input_data)
         
         prediction = model.predict(df)[0]
-        result = "Approved(acceptable credit)" if prediction == 1 else "Rejected(high risk)"
+        result = "Approved(acceptable credit)" if prediction == 0 else "Rejected(high risk)"
         print(f"[ML Model] Prediction: {prediction}, Input: Loan=${loan_amount}, Rate={loan_rate}%, Income=${person_income}")
     else:
         # 模型未加载时的兜底逻辑
