@@ -57,14 +57,14 @@
 
         async function applyLoan() {
             const amount = document.getElementById('loan-amount').value;
-            const duration = document.getElementById('loan-duration').value;
+            const rate = document.getElementById('loan-int-rate').value;
             const resultDiv = document.getElementById('loan-result');
             
             resultDiv.innerText = "AI is evaluating your credit status...";
             const res = await fetch('/predict_credit', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({amount: amount, duration: duration, age: 30})
+                body: JSON.stringify({amount: amount, rate: rate, age: 30})
             });
             const data = await res.json();
             resultDiv.innerText = "Evaluation result: " + data.result;

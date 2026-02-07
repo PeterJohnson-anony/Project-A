@@ -49,7 +49,7 @@ def predict_credit():
     # 构建输入数据帧 (需与训练时的特征顺序一致)
     input_data = {
         'loan_amnt': [int(data.get('loan_amnt', 0))],
-        'loan_int_rate': [int(data.get('loan_int_rate', 0))],
+        'loan_int_rate': [float(data.get('loan_int_rate', 0))],
         'age': [int(data.get('age', 0))]
         # ... 根据模型添加更多特征
     }
