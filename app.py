@@ -45,10 +45,12 @@ def chat():
 @app.route('/predict_credit', methods=['POST'])
 def predict_credit():
     data = request.json
+    
     # 构建输入数据帧 (需与训练时的特征顺序一致)
     input_data = {
         'loan_amnt': [int(data.get('loan_amnt', 0))],
-        'loan_int_rate': [float(data.get('loan_int_rate', 0))]
+        'loan_int_rate': [float(data.get('loan_int_rate', 0))],
+        'age': [int(data.get('age', 0))]
         # ... 根据模型添加更多特征
     }
     df = pd.DataFrame(input_data)
@@ -65,5 +67,4 @@ def predict_credit():
 
 if __name__ == '__main__':
     # host='0.0.0.0' 是在 Codespaces 中正常预览的关键
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=5000, debug=True)
